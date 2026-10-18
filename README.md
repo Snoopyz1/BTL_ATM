@@ -15,10 +15,8 @@
 Thư mục này được đóng gói độc lập, đầy đủ và chuẩn hóa toàn bộ tài nguyên báo cáo và thực nghiệm:
 
 ```
-BTL_ATM_Final_Nhom05/
+BTL_ATM/
 │
-├── Bao cao ATM - INT1482-20261-02 - Nhom 05 - FINAL.docx  <-- BÁO CÁO WORD HOÀN CHỈNH
-├── Hinh10_SoDoPhanVungMang_pfSense.png                    <-- SƠ ĐỒ PHÂN VÙNG PFSENSE
 ├── README.md                                              <-- TÀI LIỆU HƯỚNG DẪN TỔNG QUAN
 │
 ├── kich_ban_lab_docker/                                   <-- KỊCH BẢN LAB DOCKER 3 NODE
