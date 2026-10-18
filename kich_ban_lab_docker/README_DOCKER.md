@@ -44,9 +44,9 @@ Mở PowerShell / Terminal tại thư mục `kich_ban_lab_docker`:
 
 ### Bước 1: Nạp ảnh Docker vào hệ thống (nếu dùng file image nén)
 ```powershell
-docker load -i nhom05_atm_lab.tar
+docker load -i nhom05_atm_lab_final.tar
 ```
-*(Nếu chưa có file .tar, tải tại link Google Drive đính kèm trong phụ lục báo cáo)*.
+*(Tải các file .tar tại mục [Releases](https://github.com/Snoopyz1/BTL_ATM/releases))*.
 
 ### Bước 2: Khởi động toàn bộ hệ sinh thái (Firewall + Attacker + Victim)
 ```powershell
