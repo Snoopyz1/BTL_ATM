@@ -1,63 +1,78 @@
-# BỘ HỒ SƠ NỘP BÀI TẬP LỚN: AN TOÀN MẠNG (INT1482)
-## ĐỀ TÀI: AN TOÀN DỊCH VỤ TRUYỀN NHẬN TỆP (FTP / FTPS / SFTP - CRUSHFTP 10.6.0)
+# BÀI TẬP LỚN: AN TOÀN MẠNG (INT1482)
+## Đề tài: An toàn dịch vụ truyền nhận tệp (CrushFTP 10.6.0)
 
 **Học viện Công nghệ Bưu chính Viễn thông (PTIT)**  
 **Khoa An toàn Thông tin**  
-- **Nhóm thực hiện:** Nhóm 05  
-- **Lớp:** INT1482-20261-02  
-- **Giảng viên hướng dẫn:** TS. Nguyễn Ngọc Điệp  
-- **Năm học:** 2025 - 2026  
+* **Nhóm thực hiện:** Nhóm 05  
+* **Lớp:** INT1482-20261-02  
+* **Giảng viên hướng dẫn:** TS. Nguyễn Ngọc Điệp  
 
 ---
 
-## 1. CẤU TRÚC THƯ MỤC BẢN FINAL NỘP BÀI
-
-Thư mục này được đóng gói độc lập, đầy đủ và chuẩn hóa toàn bộ tài nguyên báo cáo và thực nghiệm:
+## 1. Cấu trúc kho lưu trữ
 
 ```
 BTL_ATM/
 │
-├── README.md                                              <-- TÀI LIỆU HƯỚNG DẪN TỔNG QUAN
+├── README.md                                 <-- Hướng dẫn tổng quan
 │
-├── kich_ban_lab_docker/                                   <-- KỊCH BẢN LAB DOCKER 3 NODE
-│   ├── docker-compose.yml                                 <-- Cấu hình 3 node: WAN - pfSense - LAN
-│   ├── README_DOCKER.md                                   <-- Hướng dẫn chạy và demo bằng 2 lệnh
-│   ├── firewall/                                          <-- Router / Firewall mô phỏng pfSense
-│   │   ├── Dockerfile
-│   │   └── entrypoint.sh (Cấu hình iptables NAT & filter rules)
-│   ├── attacker/                                          <-- Máy kiểm thử Kali Linux
-│   │   ├── Dockerfile
-│   │   └── exploits/ (scan_host.py, read_file.py, CVE-2025-54309)
-│   └── victim/                                            <-- Máy chủ dịch vụ CrushFTP 10.6.0
-│       └── Dockerfile
+├── kich_ban_lab_docker/                      <-- Môi trường thực nghiệm Docker Compose
+│   ├── docker-compose.yml                    <-- Cấu hình 3 node (WAN - pfSense - LAN)
+│   ├── README_DOCKER.md                      <-- Hướng dẫn chi tiết chạy và test
+│   ├── firewall/                             <-- Router Firewall mô phỏng pfSense (iptables)
+│   ├── attacker/                             <-- Kali Linux và các script exploit
+│   └── victim/                               <-- Ubuntu Server chạy CrushFTP 10.6.0
 │
-└── kich_ban_lab_vmware_pfsense/                           <-- KỊCH BẢN LAB VMWARE PFSENSE
-    ├── pfSense_Config_Backup_Nhom05.xml                   <-- File cấu hình chuẩn XML của pfSense
-    └── README_VMWARE_PFSENSE.md                           <-- Hướng dẫn chi tiết cài đặt trên VMware
+└── kich_ban_lab_vmware_pfsense/              <-- Cấu hình thực nghiệm VMware pfSense
+    ├── pfSense_Config_Backup_Nhom05.xml      <-- File backup cấu hình XML pfSense 2.7.2
+    └── README_VMWARE_PFSENSE.md              <-- Hướng dẫn cấu hình VMware VMnet2/VMnet3
 ```
 
 ---
 
-## 2. LIÊN KẾT ĐÍNH KÈM TÀI NGUYÊN (ĐÁP ỨNG TIÊU CHÍ KHUYẾN KHÍCH)
+## 2. Tải tệp ảnh Docker môi trường (.tar)
 
-Nhằm phục vụ đối chiếu, kiểm chứng tính xác thực và khả năng tái lập thực nghiệm theo yêu cầu của môn học:
-
-| Thành phần tài nguyên | Loại hình lưu trữ | Đường dẫn truy cập | Ghi chú |
-| :--- | :--- | :--- | :--- |
-| **Mã nguồn Lab & Config** | GitHub Repository | [https://github.com/Snoopyz1/BTL_ATM](https://github.com/Snoopyz1/BTL_ATM) | Chứa Dockerfile, compose, script khai thác và cấu hình pfSense |
-| **Docker Images & Video Demo** | Google Drive | `https://drive.google.com/drive/folders/nhom05-atm-demo` *(hoặc link Drive chia sẻ của nhóm)* | File ảnh `nhom05_atm_lab.tar` (448MB) và Video ghi hình quá trình demo thực nghiệm |
+Tải các gói ảnh Docker đóng gói sẵn tại mục **[Releases](https://github.com/Snoopyz1/BTL_ATM/releases)**:
+* **`nhom05_atm_lab_final.tar`** (~455 MB - *Khuyên dùng*): Gồm trọn vẹn cả 3 node (Firewall pfSense, Ubuntu CrushFTP, Kali Attacker). Chạy hoàn toàn Offline không cần kết nối Internet.
+* **`nhom05_atm_lab.tar`** (~448 MB): Gồm 2 node cơ bản (Ubuntu CrushFTP và Kali Attacker).
 
 ---
 
-## 3. HƯỚNG DẪN KHỞI CHẠY NHANH CHO GIẢNG VIÊN / NGƯỜI CHẤM
-Để chấm và đối chiếu kịch bản trong vòng 1 phút:
-1. Mở PowerShell tại thư mục `kich_ban_lab_docker`:
-   ```powershell
-   docker compose up -d
-   ```
-2. Kiểm tra dịch vụ trên trình duyệt: Truy cập `http://localhost:8080`.
-3. Vào máy kiểm thử để chạy tự động kịch bản khai thác:
+## 3. Hướng dẫn khởi chạy nhanh (Docker Compose)
+
+Mở PowerShell / Terminal tại thư mục `kich_ban_lab_docker`:
+
+### Bước 1: Nạp ảnh Docker
+```powershell
+docker load -i nhom05_atm_lab_final.tar
+```
+*(Hoặc dùng `docker load -i nhom05_atm_lab.tar` nếu tải bản 2 máy)*.
+
+### Bước 2: Khởi động hệ thống
+```powershell
+docker compose up -d
+```
+
+### Bước 3: Kiểm thử và demo đối chiếu
+1. **Truy cập Web giao diện máy chủ:**  
+   Mở trình duyệt truy cập: `http://localhost:8080` (Tài khoản: `crushadmin` / Mật khẩu: `admin123`).
+
+2. **Khai thác lỗ hổng CVE-2024-4040 đọc file cờ bí mật:**
    ```powershell
    docker exec -it attacker_kali python3 /root/exploits/read_file.py http://10.10.10.128:8080 /var/tmp/nhom05-cve4040.txt
    ```
-   > Hệ thống sẽ lập tức in ra cờ bí mật: `NHOM05-CVE4040-LAB-ONLY`.
+   > Kết quả trả về cờ bí mật: `NHOM05-CVE4040-LAB-ONLY`.
+
+3. **Khai thác lỗ hổng CVE-2025-54309 (Bypass Authentication):**
+   ```powershell
+   docker exec -it attacker_kali python3 /root/exploits/watchTowr-vs-CrushFTP-CVE-2025-54309.py http://10.10.10.128:8080
+   ```
+   > Kết quả: Vượt qua xác thực và trích xuất danh sách tài khoản quản trị.
+
+---
+
+## 4. Dọn dẹp tài nguyên
+Sau khi hoàn tất thực nghiệm:
+```powershell
+docker compose down
+```
