@@ -15,6 +15,7 @@
 BTL_ATM/
 │
 ├── README.md                                 <-- Hướng dẫn tổng quan
+├── Demo_lab.mp4                              <-- Video ghi hình quá trình demo thực nghiệm
 │
 ├── kich_ban_lab_docker/                      <-- Môi trường thực nghiệm Docker Compose
 │   ├── docker-compose.yml                    <-- Cấu hình 3 node (WAN - pfSense - LAN)
