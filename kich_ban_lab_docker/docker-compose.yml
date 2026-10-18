@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # ==============================================================
   # 1. TUONG LUA TRUNG TAM (PFSENSE FIREWALL ROUTER)
@@ -56,6 +54,7 @@ networks:
     ipam:
       config:
         - subnet: 10.10.10.0/24
+          gateway: 10.10.10.254
 
   # Vung mang noi bo LAN (10.10.20.0/24)
   lan_net:
@@ -63,3 +62,4 @@ networks:
     ipam:
       config:
         - subnet: 10.10.20.0/24
+          gateway: 10.10.20.254
