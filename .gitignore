@@ -6,7 +6,6 @@
 *.zip
 *.vmdk
 *.vmem
-*.mp4
 
 # Bo qua file tam Office va he thong
 ~$*
