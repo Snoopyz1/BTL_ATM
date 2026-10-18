@@ -19,6 +19,7 @@ Lab mô phỏng chính xác mô hình phân vùng mạng an ninh đa tầng vớ
 |  TƯỜNG LỬA TRUNG TÂM: firewall_pfsense               |
 |  - Chức năng: NAT Port Forwarding (8080, 21, 22)     |
 |  - Firewall Filter Rules: Chỉ cho phép cổng quy định |
+|  - Chế độ phòng thủ: bat_phong_thu.bat (DROP 8080)   |
 |  - Cô lập Broadcast Domain & Chống nghe lén LAN      |
 +------------------------------------------------------+
                   | [Cổng LAN: 10.10.20.1]
@@ -70,54 +71,57 @@ Docker Compose sẽ tự động khởi tạo:
 
 ---
 
-### B. Kiểm thử tấn công từ máy ngoài WAN (attacker_kali)
-1. Truy cập vào terminal máy kiểm thử Kali Linux:
-```powershell
-docker exec -it attacker_kali bash
-```
+### B. Giai đoạn 1: Khi chưa bật phòng thủ (Tấn công thành công)
 
-2. Kiểm tra kết nối tới IP cổng WAN của tường lửa (`10.10.10.128`):
-```bash
-ping 10.10.10.128 -c 2
-```
+1. **Demo lỗ hổng CVE-2024-4040 (SSTI / Đọc file cờ bí mật):**
+   ```powershell
+   docker exec -it attacker_kali python3 /root/exploits/read_file_CVE_2024_4040.py http://10.10.10.128:8080 /var/tmp/nhom05-cve4040.txt
+   ```
+   > **Kết quả:** Đọc thành công nội dung cờ bí mật: `NHOM05-CVE4040-LAB-ONLY`.
 
-3. **Demo lỗ hổng CVE-2024-4040 (SSTI / Đọc file tùy ý qua tường lửa):**
-   - Quét kiểm tra trạng thái lỗ hổng:
-     ```bash
-     python3 /root/exploits/scan_host.py http://10.10.10.128:8080
-     ```
-     > **Kết quả:** In ra `Vulnerable`.
-   - Khai thác đọc file cờ bí mật `/var/tmp/nhom05-cve4040.txt` trên máy chủ nội bộ:
-     ```bash
-     python3 /root/exploits/read_file_CVE_2024_4040.py http://10.10.10.128:8080 /var/tmp/nhom05-cve4040.txt
-     ```
-     > **Kết quả:** Đọc thành công nội dung cờ bí mật: `NHOM05-CVE4040-LAB-ONLY`.
-
-4. **Demo lỗ hổng CVE-2025-54309 (Race Condition Authentication Bypass):**
-   ```bash
-   python3 /root/exploits/attack_CVE_2025_54309.py http://10.10.10.128:8080
+2. **Demo lỗ hổng CVE-2025-54309 (Race Condition Authentication Bypass):**
+   ```powershell
+   docker exec -it attacker_kali python3 /root/exploits/attack_CVE_2025_54309.py http://10.10.10.128:8080
    ```
    > **Kết quả:** Vượt qua xác thực và trích xuất thành công danh sách người dùng quản trị (`crushadmin`, `default`, `TempAccount`).
 
-5. Thoát khỏi container Kali:
-   ```bash
-   exit
+---
+
+### C. Giai đoạn 2: Kích hoạt phòng thủ pfSense (Tấn công bị chặn đứng hoàn toàn)
+
+1. **Kích hoạt luật tường lửa chặn truy cập cổng 8080:**
+   ```powershell
+   .\bat_phong_thu.bat
    ```
+   *(Hoặc chạy `.\bat_phong_thu.ps1` nếu dùng PowerShell)*.
+
+2. **Kẻ tấn công thực thi lại CVE-2024-4040:**
+   ```powershell
+   docker exec -it attacker_kali python3 /root/exploits/read_file_CVE_2024_4040.py http://10.10.10.128:8080 /var/tmp/nhom05-cve4040.txt
+   ```
+   > **Kết quả:** Sau 10 giây chờ phản hồi $\rightarrow$ In ra thông báo lỗi `ConnectTimeout`. Tường lửa pfSense đã DROP toàn bộ gói tin, kẻ tấn công **hoàn toàn KHÔNG THỂ lấy cờ bí mật**.
+
+3. **Kẻ tấn công thực thi lại CVE-2025-54309:**
+   ```powershell
+   docker exec -it attacker_kali python3 /root/exploits/attack_CVE_2025_54309.py http://10.10.10.128:8080
+   ```
+   > **Kết quả:** Sau 10 giây chờ phản hồi $\rightarrow$ In ra thông báo lỗi `ConnectTimeout`. Cuộc tấn công bị chặn đứng hoàn toàn.
 
 ---
 
-### C. Kiểm chứng hiệu quả phân vùng của pfSense (Chống nghe lén / Sniffing)
+### D. Kiểm chứng hiệu quả phân vùng của pfSense (Chống nghe lén / Sniffing)
 1. Mở terminal chui vào `attacker_kali` để theo dõi lưu lượng mạng:
-```powershell
-docker exec -it attacker_kali tcpdump -i eth0 -n
-```
-2. Thực hiện truyền file hoặc trao đổi giữa máy chủ nội bộ trong mạng LAN.
+   ```powershell
+   docker exec -it attacker_kali tcpdump -i eth0 -n -c 5
+   ```
+2. Thực hiện truyền file hoặc trao đổi giữa các máy chủ nội bộ trong mạng LAN.
 3. **Kết quả:** Trên card mạng `eth0` của máy Kali ở vùng WAN hoàn toàn không bắt được bất kỳ gói tin nội bộ nào của mạng LAN `10.10.20.0/24`. Tường lửa đã cách ly hoàn toàn miền quảng bá (broadcast domain).
 
 ---
 
-## 5. DỪNG VÀ GIẢI PHÓNG LAB
-Khi kết thúc buổi demo hoặc chấm bài:
-```powershell
-docker compose down
-```
+## 5. DỌN DẸP VÀ GIẢI PHÓNG LAB
+* Muốn mở lại để thử nghiệm tấn công: Chạy `.\tat_phong_thu.bat`.
+* Khi kết thúc buổi demo hoặc chấm bài:
+  ```powershell
+  docker compose down
+  ```
