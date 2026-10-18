@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # ==============================================================
+  # 1. TUONG LUA TRUNG TAM (PFSENSE FIREWALL ROUTER)
+  # ==============================================================
+  firewall_pfsense:
+    build: ./firewall
+    container_name: firewall_pfsense
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      - net.ipv4.ip_forward=1
+    ports:
+      - "8080:8080"
+      - "21:21"
+    networks:
+      wan_net:
+        ipv4_address: 10.10.10.128
+      lan_net:
+        ipv4_address: 10.10.20.1
+
+  # ==============================================================
+  # 2. MAY CHU NOI BO (UBUNTU SERVER - CRUSHFTP 10.6.0)
+  # ==============================================================
+  victim:
+    image: nhom05-victim-crushftp:v1
+    container_name: victim_server
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      - firewall_pfsense
+    networks:
+      lan_net:
+        ipv4_address: 10.10.20.20
+
+  # ==============================================================
+  # 3. MAY KIEM THU VUNG NGOAI (KALI LINUX ATTACKER)
+  # ==============================================================
+  attacker:
+    image: nhom05-attacker-kali:v1
+    container_name: attacker_kali
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      - firewall_pfsense
+      - victim
+    networks:
+      wan_net:
+        ipv4_address: 10.10.10.50
+
+networks:
+  # Vung mang ngoai WAN (10.10.10.0/24)
+  wan_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.10.0/24
+
+  # Vung mang noi bo LAN (10.10.20.0/24)
+  lan_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.20.0/24

@@ -1,0 +1,15 @@
+# Bo qua cac file anh nen va file cai dat nang (tai qua Google Drive / Releases)
+*.tar
+*.tar.gz
+*.iso
+*.iso.gz
+*.zip
+*.vmdk
+*.vmem
+
+# Bo qua file tam Office va he thong
+~$*
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
