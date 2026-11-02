@@ -26,13 +26,13 @@
 * **Giảng viên hướng dẫn:** TS. Nguyễn Ngọc Điệp
 * **Phân công nhiệm vụ nhóm thực hiện:**
 
-| TT | Công việc / Nhiệm vụ | SV thực hiện | Thời hạn hoàn thành |
-| :---: | :--- | :--- | :---: |
-| 1 | • Điều phối, theo dõi tiến độ hoàn thành Demo.<br>• Thiết kế cấu hình phân vùng mạng và quy hoạch IP.<br>• Chịu trách nhiệm cài đặt cấu hình mạng lõi.<br>• Tổng hợp báo cáo chung. | **Ngô Quý Trường Giang**<br>(MSV: B23DCAT080) | 13/10/2026 |
-| 2 | • Khảo sát lý thuyết về quản lý bản vá và quy trình 6 bước khắc phục lỗ hổng.<br>• Chịu trách nhiệm chính trong việc thiết lập hệ thống phòng thủ, cài đặt các bản vá lỗi cho cả 2 hệ thống FTP. | **Đặng Trần Hải Đăng**<br>(MSV: B23DCAT036) | 11/10/2026 |
-| 3 | • Phân tích chi tiết CVE-2024-4040.<br>• Chịu trách nhiệm cài đặt phiên bản Wing FTP Server bị lỗi và chạy mã PoC khai thác lỗ hổng này trong Demo. Thu thập log và đánh giá rủi ro. | **Trần Quốc Khánh**<br>(MSV: B23DCAT150) | 11/10/2026 |
-| 4 | • Phân tích chi tiết CVE-2025-54309.<br>• Chịu trách nhiệm cài đặt CrushFTP và thực hiện khai thác lỗ hổng bypass xác thực trong Demo. | **Trần Huy Hoàng**<br>(MSV: B23DCAT115) | 11/10/2026 |
-| 5 | • Tổng hợp báo cáo, vẽ sơ đồ cấu hình mạng bằng phần mềm.<br>• Thu thập ảnh chụp màn hình minh chứng cho Demo. Đảm bảo form mẫu báo cáo chuẩn chỉ. | **Nguyễn Thị Ngọc Anh**<br>(MSV: B23DCAT015) | 11/10/2026 |
+| TT | Công việc / Nhiệm vụ | SV thực hiện |
+| :---: | :--- | :--- |
+| 1 | • Điều phối, theo dõi tiến độ hoàn thành Demo.<br>• Thiết kế cấu hình phân vùng mạng và quy hoạch IP.<br>• Chịu trách nhiệm cài đặt cấu hình mạng lõi.<br>• Tổng hợp báo cáo chung. | **Ngô Quý Trường Giang** (MSV: B23DCAT080) |
+| 2 | • Khảo sát lý thuyết về quản lý bản vá và quy trình 6 bước khắc phục lỗ hổng.<br>• Chịu trách nhiệm chính trong việc thiết lập hệ thống phòng thủ, cài đặt các bản vá lỗi cho cả 2 hệ thống FTP. | **Đặng Trần Hải Đăng** (MSV: B23DCAT036) |
+| 3 | • Phân tích chi tiết CVE-2024-4040.<br>• Chịu trách nhiệm cài đặt phiên bản Wing FTP Server bị lỗi và chạy mã PoC khai thác lỗ hổng này trong Demo. Thu thập log và đánh giá rủi ro. | **Trần Quốc Khánh** (MSV: B23DCAT150) |
+| 4 | • Phân tích chi tiết CVE-2025-54309.<br>• Chịu trách nhiệm cài đặt CrushFTP và thực hiện khai thác lỗ hổng bypass xác thực trong Demo. | **Trần Huy Hoàng** (MSV: B23DCAT115) |
+| 5 | • Tổng hợp báo cáo, vẽ sơ đồ cấu hình mạng bằng phần mềm.<br>• Thu thập ảnh chụp màn hình minh chứng cho Demo. Đảm bảo form mẫu báo cáo chuẩn chỉ. | **Nguyễn Thị Ngọc Anh** (MSV: B23DCAT015) |
 
 ---
 
