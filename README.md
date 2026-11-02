@@ -15,7 +15,7 @@
 BTL_ATM/
 │
 ├── README.md                                 <-- Hướng dẫn tổng quan
-├── video demo/                               <-- Thư mục video demo thực nghiệm
+├── video_demo/                               <-- Thư mục video demo thực nghiệm
 ├── document/                                 <-- Thư mục tài liệu báo cáo
 │
 ├── kich_ban_lab_docker/                      <-- Môi trường thực nghiệm Docker Compose
